@@ -483,7 +483,7 @@ def conv2d():
 
 
     def test4():
-        """non square kernel, stride"""
+        """stride"""
         hparams = {
             "B": 32,
             "in_channels": 16,
@@ -535,7 +535,7 @@ def conv2d():
         return (inp_t, ker_t, hparams, torch_conv)
 
     def test3():
-        """non square inp, padding"""
+        """padding"""
         hparams = {
             "B": 32,
             "in_channels": 16,

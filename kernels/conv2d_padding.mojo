@@ -18,9 +18,9 @@ from gpu.host import DeviceBuffer
 
 #alias TPB      = 32
 # smaller to help numerical stability 
-alias TPB      = 16
-alias TPB_X    = TPB
-alias TPB_Y    = TPB
+alias TPB = 16
+alias TPB_X = TPB
+alias TPB_Y = TPB
 alias THREADS_PER_BLOCK = (TPB_X, TPB_Y, 1)
 
 alias dtype = DType.float32
@@ -120,7 +120,8 @@ fn conv2d_kernel[
                 ty = sy + ry
 
                 # Gaurd for inp patch and load to tile
-                if cur_x < W and cur_y < H:
+                # up... with padding this can be neg
+                if 0 <= cur_x < W and 0 <= cur_y < H:
                     inp_tile[ty, tx] = inp[n, cur_in_channel, cur_y, cur_x]
                 else:
                     inp_tile[ty, tx] = 0
@@ -129,7 +130,11 @@ fn conv2d_kernel[
 
         ######## RIGHT 
         if local_x < ker_w - 1:
+            
+            # these offsets are failing
+            #var offset_x = stride_w * (TPB_X - ker_w) + (ker_w-stride_w)
             var offset_x = stride_w * (TPB_X - ker_w) + ker_w
+            #var offset_x = stride_w * TPB_X
 
             var gx_r = offset_x + x_base
             var tile_x = sx + offset_x
@@ -141,7 +146,7 @@ fn conv2d_kernel[
                     cur_y = y_base + ry
 
                     # Gaurd for inp patch
-                    if cur_x < W and cur_y < H:
+                    if 0 <= cur_x < W and 0 <= cur_y < H:
                         inp_tile[sy+ry, rx+tile_x] = inp[n, cur_in_channel, cur_y, cur_x]
                     else:
                         inp_tile[sy+ry, rx+tile_x] = 0
@@ -149,6 +154,7 @@ fn conv2d_kernel[
         ####### BOTTOM 
         if local_y < ker_h - 1:
             var offset_y = stride_h * (TPB_Y-ker_h) + ker_h
+            #var offset_y = stride_h * TPB_Y
             var gy_b = y_base + offset_y
             var tile_y = sy + offset_y
 
@@ -158,7 +164,7 @@ fn conv2d_kernel[
                     cur_x = x_base + rx
                     cur_y = gy_b + ry
 
-                    if cur_x < W and cur_y < H:
+                    if 0 <= cur_x < W and 0 <= cur_y < H:
                         inp_tile[tile_y+ry, rx+sx] = inp[n, cur_in_channel, cur_y, cur_x]
                     else:
                         inp_tile[ry+tile_y, rx+sx] = 0
@@ -169,6 +175,9 @@ fn conv2d_kernel[
 
             var offset_x = stride_w * (TPB_X - ker_w) + ker_w
             var offset_y = stride_h * (TPB_Y-ker_h) + ker_h
+            
+            #var offset_x = stride_w * TPB_X
+            #var offset_y = stride_h * TPB_Y
             
             var gx_br = x_base + offset_x
             var gy_br = y_base + offset_y
@@ -182,7 +191,7 @@ fn conv2d_kernel[
                     cur_x = gx_br + rx
                     cur_y = gy_br + ry
 
-                    if cur_x< W and cur_y< H:
+                    if 0 <= cur_x< W and 0 <= cur_y< H:
                         inp_tile[ry+tile_y, rx+tile_x] = \
                             inp[n, cur_in_channel, cur_y, cur_x]
                     else:
