@@ -1,13 +1,22 @@
-# ModInject 
-Welcome! I was able to finish a few things...
-- [x] Basic BMM kernel 
-- [x] A (probably) working conv2d kernel with stride and padding
-- [x] Script to 'inject' bmm into pretrained net 
+# Welcome to my Project 
 
-Missing stuff
-- [ ] Script to 'inject' conv2 into pretrained (successfully)
-- [ ] Stability fixes to conv2
+The goals were loosely...
+1. Write a `bmm` kernel that 'works'
+2. Write a `conv2d` kernel that 'works'
+3. Write a `conv2d` kernel with stride and paddign that 'works'
+4. Inject an existing torch model with the `bmm` kernel
+5. Inject an existing torch model with the `bmm` and `conv2d` kernel
 
+Extended goals:
+1. Write a `conv2d` kernel that is effecient for unstructure-ly pruned conv2d and linear layers 
+
+The status at the end...
+- [x] Write basic BMM kernel that worksmm 
+- [x] Write a  working conv2d kernel (superceded by stride+padding version)
+- [x] Write a  working conv2d kernel with stride and padding
+- [x] Script to 'inject' `bmm` into pretrained net 
+- [ ] Script to 'inject' `conv2d` into pretrained net 
+- [ ] Sparse kernels
 
 # Quick Start
 
@@ -38,6 +47,18 @@ python bench.py conv2d
 Run a IMAGENET model and inject the custom kernels
 ```bash
 python injector.py
+```
+
+
+## Results
+
+Injector
+```
+Inferencing on all models
+Checking for matching values
+Torch and bmm mojo match!
+Original  : 4981.794261932373 ms / iter
+Mojo-BMM  : 24243.74566078186 ms / iter
 ```
 
 

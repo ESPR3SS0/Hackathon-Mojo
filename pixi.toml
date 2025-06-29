@@ -117,7 +117,7 @@ all-animations = { cmd = "echo 'All animations generated!'", depends-on = ["viz0
 kernel-comp = "mojo package kernels -o kernels.mojopkg"
 bench-bmm = "python bench.py bmm"
 bench-conv = "python bench.py conv"
-injectconv = "python injector.py"
+inject= "python injector.py"
 
 [pypi-dependencies]
 art = ">=6.5, <7"
